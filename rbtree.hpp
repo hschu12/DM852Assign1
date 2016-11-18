@@ -46,54 +46,73 @@ namespace DM852{
 				parent = nullptr;
 				color = BLACK;
 			}
+
+			Node successor(Node *x) {
+				std::cout << "successor" << std::endl;
+				if (x->rightChild != NULL)
+				{
+					while (x!= NULL)
+					{
+					x = x->leftChild;
+					}
+					return *x;
+				}
+				Node *y = x->parent;
+				while (y != NULL && x==y->rightChild)
+				{
+					x = y;
+					y = y->parent;
+				}
+				return *y;
+			}
 		};
+
+		key_compare comp;
+		Node *NIL;
+		Node *root;
+		Node *toMain;
 		
-		class iterator : public std::iterator<std::bidirectional_iterator_tag, Node> 
+		class iterator 
 		{
 
 		public:
 
-			iterator(Node *p) :position(p) {}
-			~iterator();
+			using iterator_category = std::bidirectional_iterator_tag;
+
+			iterator(Node *p) : position(p) {}
+			~iterator()
+			{
+				delete position;
+			}
+
+			iterator(const iterator& it);
+			iterator& operator=(const iterator& it);
 		
-			bool operator== (const iterator& rhs) const;
+			bool operator== (const iterator& rhs) const
+			{
+				return (*this == rhs);
+			}
 
-			bool operator!= (const iterator& rhs) const;
+			bool operator!= (const iterator& rhs) const
+			{
+				return !(*this == rhs);
+			}
 
-			Node& operator* () const;
+			Node& operator* () const 
+			{
+				return *position;
+			}
+
+
+			Node* operator->() const
+			{
+				return position;
+			}
 
 			iterator& operator++ () 
 			{
-				Node *p;
-				if (position == NIL) 
-				{
-					position = root;
-					while (position->leftChild != NIL)
-					{
-						position = position->leftChild;
-					}
-				}
-				else
-				{
-					if (position->rightChild != NIL)
-					{
-						position = position -> rightChild;
-						while (position->left != NIL)
-						{
-							position = position->leftChild;
-						}
-					}
-					else
-					{
-						p = position->parent;
-						while (p!= NIL && position == p->rightChild)
-						{
-							position = p;
-							p = p->parent;
-						}
-						position = p;
-					}
-				}
+				std::cout << "++" << std::endl;
+				*position = position->successor(position);
 				return *this;
 			}
 
@@ -102,9 +121,6 @@ namespace DM852{
 			iterator& operator-- ();
 
 			iterator operator-- (int);
-
-			Node* operator->() const;
-
 
 		private:
 			Node *position;
@@ -119,19 +135,15 @@ namespace DM852{
 			const_iterator();
 			~const_iterator();
 		
-			/* data */
+			
 		};
 
 		using iterator = typename RBtree::iterator;
 		using const_iterator = typename RBtree::const_iterator;
 
-		key_compare comp;
-		Node *NIL;
-		Node *root;
-		Node *toMain;
-
 		iterator begin()
 		{
+			std::cout << "(begin)" << std::endl;
 			Node *currentNode = root;
 			if(currentNode != NIL)
 			{
@@ -140,11 +152,13 @@ namespace DM852{
 					currentNode = currentNode->leftChild;
 				}
 			}
+			std::cout << "(begin ending)" << std::endl;
 			return iterator(currentNode);
 		}
 		
 		iterator end()
 		{
+			std::cout << "begin" << std::endl;
 			return iterator(NIL);
 		}
 
