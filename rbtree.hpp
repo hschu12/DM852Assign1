@@ -27,7 +27,7 @@ namespace DM852{
 			mapped_type data;
 			key_type key;
 			Color color;
-			Node *parent, *leftChild, *rightChild;
+			Node *parent, *leftChild, *rightChild, *successor;
 
 			Node (key_type k, mapped_type d)
 			{
@@ -36,6 +36,7 @@ namespace DM852{
 				leftChild = nullptr;
 				rightChild = nullptr;
 				parent = nullptr;
+				successor = nullptr;
 				color = RED;
 			}
 
@@ -44,26 +45,8 @@ namespace DM852{
 				leftChild = nullptr;
 				rightChild = nullptr;
 				parent = nullptr;
+				successor = nullptr;
 				color = BLACK;
-			}
-
-			Node successor(Node *x) {
-				std::cout << "successor" << std::endl;
-				if (x->rightChild != NULL)
-				{
-					while (x!= NULL)
-					{
-					x = x->leftChild;
-					}
-					return *x;
-				}
-				Node *y = x->parent;
-				while (y != NULL && x==y->rightChild)
-				{
-					x = y;
-					y = y->parent;
-				}
-				return *y;
 			}
 		};
 
@@ -86,15 +69,16 @@ namespace DM852{
 			}
 
 			iterator(const iterator& it);
-			iterator& operator=(const iterator& it);
 		
 			bool operator== (const iterator& rhs) const
 			{
 				return (*this == rhs);
 			}
 
-			bool operator!= (const iterator& rhs) const
+			bool operator!= (const iterator& rhs)
 			{
+				/*bool result = !(*this == rhs);
+				std::cout << "evalutated to " << result << std::endl;*/
 				return !(*this == rhs);
 			}
 
@@ -111,8 +95,8 @@ namespace DM852{
 
 			iterator& operator++ () 
 			{
-				std::cout << "++" << std::endl;
-				*position = position->successor(position);
+				std::cout << "++ " << std::endl;
+				position = position->successor;
 				return *this;
 			}
 
@@ -133,9 +117,7 @@ namespace DM852{
 		{
 		public:
 			const_iterator();
-			~const_iterator();
-		
-			
+			~const_iterator();	
 		};
 
 		using iterator = typename RBtree::iterator;
@@ -182,6 +164,8 @@ namespace DM852{
 
  		void insert(value_type &&v)
  		{
+ 			std::cout << std::endl;
+ 			std::cout << "insert: " << v.second  << std::endl;
 			Node *z = new Node(v.first, v.second);	
 			Node *y = NIL;
 			Node *x = root;
@@ -344,6 +328,7 @@ namespace DM852{
 				}
 			}
 			root->color = BLACK;
+			setsuccesors(root);
 		}
 
 		void leftRotate(Node *x)
@@ -483,13 +468,48 @@ namespace DM852{
 			x->color = BLACK;
 		}
 
-		Node tree_minimum(Node *x)
+		Node* tree_minimum(Node *x)
 		{
-			while (x!= NIL)
+			while (x->leftChild != NIL)
 			{
 				x = x->leftChild;
 			}
 			return x;
+		}
+
+		Node* tree_successor(Node *x)
+		{
+			if (x->rightChild !=  NIL)
+			{
+				return tree_minimum(x->rightChild);
+			}
+			Node *y = x->parent;
+			while (y != NIL && x==y->rightChild)
+			{
+				x = y;
+				y = y->parent;
+			}
+			return y;
+		}
+
+		void setsuccesors(Node *x)
+		{
+			if (x != NIL)
+			{
+				setsuccesors(x->leftChild);
+				x->successor = tree_successor(x);
+				setsuccesors(x->rightChild);
+			}
+		}
+
+		void in_order_tree(Node *x)
+		{
+			if (x != NIL)
+			{
+				in_order_tree(x->leftChild);
+				std::cout << x->data << " has successor: " << x->successor->data << std::endl;
+				in_order_tree(x->rightChild);
+			}
 		}
 
 		void printTree(Node *n) {

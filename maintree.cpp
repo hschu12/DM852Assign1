@@ -19,16 +19,29 @@ int main()
 
 	std::cout << "done inserting" << std::endl;
 
-	std::cout << "begin is " << (*(tree.begin())).data << std::endl;
+	//std::cout << "begin is " << (*(tree.begin())).data << std::endl;
 	//std::cout << "end is " << (*(tree.end())).data << std::endl;
-	/*for (auto it = tree.begin(); it != tree.end(); ++it)
-	{
-		std::cout << "for" << std::endl;
-	}
-	std::cout << std::endl;
+
+	auto it = tree.begin();
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	++it;
+	std::cout << "it data " << it->data << std::endl;
+	/*++it;
+	std::cout << "it data " << it->data << std::endl;*/
+
 	//std::cout << tree.root->color << " with value "<< tree.root->data << std::endl;
-	*/
-	tree.printTree(tree.root);
+	
+	//tree.printTree(tree.root);
 
 	return 0;
 }
